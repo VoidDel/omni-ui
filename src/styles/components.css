@@ -51,7 +51,8 @@
 .thead .num, .trow .num { text-align: end; justify-content: flex-end; font-variant-numeric: tabular-nums; }
 .rows { position: relative; margin: 4px 10px 12px; }
 .trow { position: absolute; left: 0; right: 0; height: var(--row-h); border-radius: 6px; font-size: .93rem; padding: 0 16px; transition: background 80ms; }
-.trow:hover { background: var(--bg-hover); }
+/* Hover: the light accent wash of the sidebar (half the selected tint); a selected row keeps its colour. */
+.trow:hover:not([aria-selected="true"]) { background: color-mix(in srgb, var(--accent-subtle) 50%, transparent); }
 .trow[aria-selected="true"] { background: var(--selection-bg); color: var(--selection-fg); }
 .trow.focus { box-shadow: inset 0 0 0 1px var(--accent); }
 .trow.placeholder { color: var(--fg-muted); }
@@ -60,7 +61,8 @@
 .trow .nm-txt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .trow .sub { font-size: .76rem; color: var(--fg-muted); font-family: var(--font-mono); }
 .trow .dim { color: var(--fg-secondary); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.emptyst { min-height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--fg-muted); padding: 32px; text-align: center; }
+/* Fills its container and centres the content in it (a list pane, a panel). */
+.emptyst { height: 100%; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--fg-muted); padding: 32px; text-align: center; }
 .emptyst > .ic { width: 40px; height: 40px; opacity: .6; }
 .drop-overlay { position: absolute; inset: 8px; border: 2px dashed var(--accent); border-radius: var(--radius-lg); background: var(--accent-subtle); z-index: 20; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 600; pointer-events: none; }
 

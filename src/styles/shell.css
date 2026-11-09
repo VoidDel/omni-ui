@@ -39,7 +39,12 @@
   display: flex; align-items: center; gap: 10px; height: 32px; padding: 0 10px; border-radius: var(--radius-md);
   color: var(--fg-primary); width: 100%; font-size: .93rem; white-space: nowrap; overflow: hidden; transition: background var(--dur);
 }
-.nav-item:hover { background: var(--bg-hover); }
+/* Hover: a light wash of the accent, half the selected item's, rather than the neutral --bg-hover,
+   which reads as a grey (or, on a window material, whitish) slab on the tinted sidebar. */
+.nav-item:hover:not([aria-current="true"]) { background: color-mix(in srgb, var(--accent-subtle) 50%, transparent); }
+/* The focus ring inside the item: sidebar sections scroll in clipping boxes, where a ring outside
+   would be cut down to two stray lines. */
+.nav-item:focus-visible { outline-offset: -2px; border-radius: var(--radius-md); }
 .nav-item[aria-current="true"] { background: var(--accent-subtle); color: var(--accent); }
 .nav-item .lbl { overflow: hidden; text-overflow: ellipsis; }
 .sb-sep { border: 0; border-top: 1px solid var(--border-subtle); margin: 8px 16px 6px; flex: none; }
@@ -59,7 +64,7 @@
 .nav-item[aria-expanded="true"] .chev { transform: rotate(180deg); }
 /* Task summary at the bottom of the sidebar (count + progress). */
 .task-sum { display: flex; flex-direction: column; gap: 6px; padding: 6px 10px; border-radius: var(--radius-md); width: 100%; font-size: .86rem; }
-.task-sum:hover { background: var(--bg-hover); }
+.task-sum:hover { background: color-mix(in srgb, var(--accent-subtle) 50%, transparent); }
 .task-sum .row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 .task-sum .row span { overflow: hidden; text-overflow: ellipsis; }
 .window.collapsed .lbl, .window.collapsed .sb-sep, .window.collapsed .brandname, .window.collapsed .sb-brand,
@@ -107,6 +112,9 @@
 .statusbar { height: 28px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: .8rem; color: var(--fg-secondary); border-top: 1px solid var(--border-subtle); flex: none; white-space: nowrap; overflow: hidden; }
 .statusbar .mid { flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .statusbar .lft, .statusbar .rgt { display: flex; align-items: center; gap: 8px; flex: none; }
+/* An item with an icon (a speed, a state): the icon centred on the text, not on its baseline. */
+.statusbar :is(.lft, .rgt) > :has(> .ic) { display: inline-flex; align-items: center; gap: 4px; }
+.statusbar .ic { width: 14px; height: 14px; }
 .sb-scrim { position: absolute; inset: 0; z-index: 19; background: var(--overlay-scrim); }
 .menu-toggle { display: none; }
 @media (max-width: 800px) { .cmdbar .btn .lbl { display: none; } .cmdbar .btn { padding: 0 8px; } }

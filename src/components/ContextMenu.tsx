@@ -29,8 +29,11 @@ export function ContextMenu({ x, y, items, onClose, anchor }: ContextMenuProps) 
   const [pos, setPos] = useState({ left: x, top: y });
   const [active, setActive] = useState(-1);
   useLayoutEffect(() => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
+    const el = ref.current;
+    if (!el) return;
+    // Layout size, not getBoundingClientRect: the opening animation scales the menu, and its
+    // first frame would measure it too small (a flipped menu then overlapped its button).
+    const r = { width: el.offsetWidth, height: el.offsetHeight };
     setPos({
       left: Math.max(8, Math.min(x, window.innerWidth - r.width - 8)),
       top: y + r.height > window.innerHeight - 8 ? Math.max(8, y - r.height) : y,
