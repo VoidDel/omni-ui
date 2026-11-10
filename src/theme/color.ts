@@ -45,9 +45,19 @@ export function contrast(a: string, b: string): number {
   return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
 }
 
-/** Black or white, whichever reads better on `bg`. */
+/** White on `bg` when it reads as body text (4.5:1); otherwise black or white, whichever
+ *  contrasts more (white when they are about level). */
 export function onColor(bg: string): string {
-  return contrast(bg, '#FFFFFF') >= 3.0 ? '#FFFFFF' : '#111111';
+  const white = contrast(bg, '#FFFFFF');
+  return white >= 4.5 || white >= contrast(bg, '#111111') * 0.9 ? '#FFFFFF' : '#111111';
+}
+
+/** The lowest opacity from `from` up at which `fg` over each background reaches `min` contrast. */
+export function opacityFor(fg: string, backgrounds: string[], min: number, from: number): number {
+  for (let a = Math.round(from * 100); a < 100; a++) {
+    if (backgrounds.every((bg) => contrast(mix(bg, fg, a / 100), bg) >= min)) return a / 100;
+  }
+  return 1;
 }
 
 /** Moves `fg` toward black or white until it reaches `min` contrast against every background. */

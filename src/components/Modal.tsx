@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { Icon } from '../icons/Icon';
@@ -21,6 +21,7 @@ export interface ModalProps {
 /** Modal dialog with focus trapping and Escape to close. */
 export function Modal({ title, onClose, children, footer, width, sticky, dragHeader, closeLabel = 'Close' }: ModalProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   const drag = dragHeader || undefined;
   // Focus moves into the dialog once, when it opens. `onClose` is usually a new function on every
   // render; were it a dependency, each keystroke would re-run this and pull the focus back to the
@@ -60,15 +61,18 @@ export function Modal({ title, onClose, children, footer, width, sticky, dragHea
   }, []);
   return createPortal(
     <div className="scrim" onMouseDown={(e) => !sticky && e.target === e.currentTarget && onClose()}>
-      <div ref={ref} className="modal" role="dialog" aria-modal="true" style={{ ['--mw' as string]: `${width ?? 520}px` }}>
-        <header data-tauri-drag-region={drag}>
-          <h2 data-tauri-drag-region={drag}>{title}</h2>
+      <div ref={ref} className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId} style={{ ['--mw' as string]: `${width ?? 520}px` }}>
+        {/* `role="none"`: a dialog's header and footer are not the page's banner and footer. */}
+        <header role="none" data-tauri-drag-region={drag}>
+          <h2 id={titleId} data-tauri-drag-region={drag}>
+            {title}
+          </h2>
           <button type="button" className="iconbtn" onClick={onClose} aria-label={closeLabel}>
             <Icon name="x" />
           </button>
         </header>
         <div className="mb">{children}</div>
-        {footer && <footer>{footer}</footer>}
+        {footer && <footer role="none">{footer}</footer>}
       </div>
     </div>,
     document.body,

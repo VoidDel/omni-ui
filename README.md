@@ -75,7 +75,7 @@ const resolved = resolveTheme(theme, { accent: 'system', systemAccent: '#0067C0'
 writeTheme(resolved, { platform: 'win', density: 'comfortable', iconStyle: 'duotone', material: true, fontSize: 14 });
 ```
 
-`writeTheme` 把每个令牌写成根元素上的 CSS 变量，并设置样式表依赖的 `data-appearance` / `data-platform` / `data-density` / `data-icons` / `data-material` / `data-hc`。有 Rust 主题服务的应用（OmniZip）在 Rust 侧解析，前端只调用 `writeTheme`；两边算法相同，`src/theme/resolve.test.ts` 用晨光主题的派生值做了对拍。
+`writeTheme` 把每个令牌写成根元素上的 CSS 变量，并设置样式表依赖的 `data-appearance` / `data-platform` / `data-density` / `data-icons` / `data-material` / `data-hc`。有 Rust 主题服务的应用（OmniZip）在 Rust 侧解析，前端只调用 `writeTheme`；两边算法相同，`src/theme/resolve.test.ts` 用晨光主题的派生值做了对拍。对比度一轮之后这里暂时领先于 Rust 侧：`fg.muted`、次要文字的 4.5:1 修正、`accent.fg` 的取法和 `-text` 令牌。样式表里都写了回退（`var(--success-text, var(--success))`），Rust 侧补上同样的派生之前，外观与原来一致。
 
 ### 令牌
 
@@ -84,10 +84,11 @@ writeTheme(resolved, { platform: 'win', density: 'comfortable', iconStyle: 'duot
 | 必填 | 派生 |
 |---|---|
 | `bg.canvas` `bg.surface` `bg.elevated` `bg.sidebar` | `bg.subtle / hover / pressed` = 面板色向文字色混合 4% / 7% / 11%；材质开启时 `sidebar-material` / `canvas-material` 为半透明 |
-| `fg.primary` `fg.secondary` | `fg.muted` = 55% 透明度，`fg.disabled` = 35%；对比度不足时自动向黑或白修正 |
+| `fg.primary` `fg.secondary` | `fg.muted` = 55% 透明度起、在每种面板上都达到 4.5:1 的最低透明度，`fg.disabled` = 35%；主、次文字不足 4.5:1 时自动向黑或白修正 |
 | `border.default` | `border.subtle` = 与面板色对半混合，`border.strong` = 向文字色混合 25%，`border.focus` = 强调色 |
-| `accent` | `accent.hover / pressed` = 向文字色混合 12% / 22%，`accent.subtle` = 14% 透明度，`accent.fg` = 黑白中对比更高者 |
+| `accent` | `accent.hover / pressed` = 向文字色混合 12% / 22%，`accent.subtle` = 14% 透明度，`accent.fg` = 白色达 4.5:1 时用白，否则取黑白中对比更高者 |
 | `success` `warning` `danger` `info` | 各自的 `.subtle`（14%，警告 16%） |
+| — | 文字用色 `accent-text` `success-text` `warning-text` `danger-text` `info-text` `bt-text`：原色向文字色修正到在每种面板、自身的 `.subtle` 底色和选中行上都达到 4.5:1。原色用于圆点、进度条、按钮底色（3:1 即可），作文字时用 `-text` |
 | — | `selection.bg` = 强调色 22%，`folder-color`、`shadow-1/2`、`overlay-scrim` 按明暗固定；`bt`（种子 / 磁力徽章）浅 `#7A5AF8` 深 `#A48BFF` |
 
 非颜色令牌：圆角 4 / 8 / 12，控件高 32，行高 32（紧凑 28 / 宽松 40），标题栏 40，侧栏 240，基准字号 14（12–20 可缩放），字体为系统字体栈，等宽用于路径与快捷键。

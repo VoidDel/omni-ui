@@ -34,10 +34,10 @@
 .btn.primary:disabled { background: var(--bg-pressed); color: var(--fg-disabled); }
 .btn.outline { border-color: var(--border-default); background: var(--bg-surface); }
 .btn.outline:hover { background: var(--bg-hover); }
-.btn.danger { color: var(--danger); }
+.btn.danger { color: var(--danger-text, var(--danger)); }
 .btn.lg { height: 40px; padding: 0 18px; font-size: .95rem; }
 .btn .ic { width: 16px; height: 16px; }
-.badge { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--badge-fg, var(--accent)); background: var(--badge-bg, var(--accent-subtle)); white-space: nowrap; }
+.badge { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: 4px; font-size: .72rem; font-weight: 700; letter-spacing: .04em; color: var(--badge-fg, var(--accent-text, var(--accent))); background: var(--badge-bg, var(--accent-subtle)); white-space: nowrap; }
 .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--fg-muted); display: inline-block; }
 
 /* ---------------------------------------------------------------- table (virtualised rows) */
@@ -60,11 +60,13 @@
 .trow .nm-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
 .trow .nm-txt span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .trow .sub { font-size: .76rem; color: var(--fg-muted); font-family: var(--font-mono); }
+/* On the selection's tint the secondary colour is too faint for text. */
+.trow[aria-selected="true"] .dim { color: var(--selection-fg); }
 .trow .dim { color: var(--fg-secondary); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Fills its container and centres the content in it (a list pane, a panel). */
 .emptyst { height: 100%; min-height: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--fg-muted); padding: 32px; text-align: center; }
 .emptyst > .ic { width: 40px; height: 40px; opacity: .6; }
-.drop-overlay { position: absolute; inset: 8px; border: 2px dashed var(--accent); border-radius: var(--radius-lg); background: var(--accent-subtle); z-index: 20; display: flex; align-items: center; justify-content: center; color: var(--accent); font-weight: 600; pointer-events: none; }
+.drop-overlay { position: absolute; inset: 8px; border: 2px dashed var(--accent); border-radius: var(--radius-lg); background: var(--accent-subtle); z-index: 20; display: flex; align-items: center; justify-content: center; color: var(--accent-text, var(--accent)); font-weight: 600; pointer-events: none; }
 
 /* ---------------------------------------------------------------- file type icons */
 .fi { width: 20px; height: 20px; color: var(--fg-secondary); flex: none; }
@@ -120,8 +122,8 @@
 .set-row .ctl { display: flex; align-items: center; gap: 8px; flex: none; max-width: 60%; justify-content: flex-end; flex-wrap: wrap; }
 .set-row.col { flex-direction: column; align-items: stretch; }
 .set-row.col .ctl { max-width: none; justify-content: flex-start; }
-.status-ok { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; color: var(--success); }
-.status-warn { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; color: var(--warning); }
+.status-ok { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; color: var(--success-text, var(--success)); }
+.status-warn { display: inline-flex; align-items: center; gap: 6px; font-size: .86rem; color: var(--warning-text, var(--warning)); }
 /* WebView2 adds its own reveal button to password fields; PasswordInput has one already. */
 input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }
 .sel, input.inp { height: var(--ctrl-h); padding: 0 10px; border-radius: var(--radius-md); border: 1px solid var(--border-default); background: var(--bg-surface); font-size: .9rem; min-width: 0; max-width: 100%; }
@@ -143,7 +145,7 @@ input.inp.mono { font-family: var(--font-mono); font-size: .84rem; }
 .seg { display: inline-flex; background: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 2px; gap: 2px; flex-wrap: wrap; }
 .seg button { height: 26px; padding: 0 10px; border-radius: 6px; color: var(--fg-secondary); font-size: .86rem; display: inline-flex; align-items: center; gap: 6px; transition: background var(--dur), color var(--dur); white-space: nowrap; }
 .seg button:hover { color: var(--fg-primary); }
-.seg button[aria-pressed="true"] { background: var(--bg-surface); color: var(--fg-primary); box-shadow: var(--shadow-1); }
+.seg button[aria-checked="true"], .seg button[aria-pressed="true"] { background: var(--bg-surface); color: var(--fg-primary); box-shadow: var(--shadow-1); }
 .seg button:disabled { color: var(--fg-disabled); cursor: default; }
 .seg.lg button { height: 30px; padding: 0 14px; font-size: .9rem; }
 /* Tabs switch what is shown (Segmented picks a value): text, the current one underlined in the
@@ -218,7 +220,7 @@ input[type=range] { accent-color: var(--accent); width: 160px; }
 .strength i.on { background: var(--success); }
 .strength i.on.w { background: var(--warning); }
 .hint { font-size: .8rem; color: var(--fg-secondary); }
-.err { font-size: .84rem; color: var(--danger); display: flex; align-items: center; gap: 6px; }
+.err { font-size: .84rem; color: var(--danger-text, var(--danger)); display: flex; align-items: center; gap: 6px; }
 .note { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: var(--radius-md); background: var(--info-subtle); color: var(--fg-primary); font-size: .86rem; line-height: 1.4; }
 .note .ic { color: var(--info); margin-top: 1px; }
 .note.warn { background: var(--warning-subtle); }
@@ -259,7 +261,7 @@ pre.code { margin: 0; font-family: var(--font-mono); font-size: .82rem; line-hei
 .task.paused .progress > i { background: var(--warning); }
 .task .acts { display: flex; gap: 6px; justify-content: flex-end; }
 .task .acts .btn { height: 26px; padding: 0 8px; font-size: .82rem; }
-.task .errline { color: var(--danger); font-size: .8rem; }
+.task .errline { color: var(--danger-text, var(--danger)); font-size: .8rem; }
 
 /* ---------------------------------------------------------------- menus, toasts */
 .ctx { position: fixed; z-index: 40; min-width: 220px; background: var(--bg-elevated); border: 1px solid var(--border-default); border-radius: var(--radius-md); box-shadow: var(--shadow-2); padding: 4px; font-size: .9rem; animation: pop 120ms ease-out; }
@@ -268,7 +270,7 @@ pre.code { margin: 0; font-family: var(--font-mono); font-size: .82rem; line-hei
 .ctx button:hover:not(:disabled), .ctx button.active { background: var(--bg-hover); }
 .ctx button:disabled { color: var(--fg-disabled); cursor: default; }
 .ctx button:disabled .ic { color: var(--fg-disabled); }
-.ctx button.danger { color: var(--danger); }
+.ctx button.danger { color: var(--danger-text, var(--danger)); }
 .ctx button kbd { margin-left: auto; padding-left: 16px; }
 .ctx button .check { margin-left: auto; color: var(--accent); }
 .ctx hr { border: 0; border-top: 1px solid var(--border-subtle); margin: 4px 0; }
@@ -279,7 +281,7 @@ pre.code { margin: 0; font-family: var(--font-mono); font-size: .82rem; line-hei
 .toast.info > .ic { color: var(--info); }
 .toast.warn > .ic { color: var(--warning); }
 .toast span { flex: 1; min-width: 0; word-break: break-word; }
-.toast button.lnk { color: var(--accent); font-weight: 500; white-space: nowrap; }
+.toast button.lnk { color: var(--accent-text, var(--accent)); font-weight: 500; white-space: nowrap; }
 .toast .iconbtn { width: 24px; height: 24px; }
 :root[data-hc="true"] .btn.outline, :root[data-hc="true"] .set-group, :root[data-hc="true"] .card, :root[data-hc="true"] .modal { border-width: 2px; }
 

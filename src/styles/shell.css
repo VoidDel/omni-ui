@@ -45,7 +45,7 @@
 /* The focus ring inside the item: sidebar sections scroll in clipping boxes, where a ring outside
    would be cut down to two stray lines. */
 .nav-item:focus-visible { outline-offset: -2px; border-radius: var(--radius-md); }
-.nav-item[aria-current="true"] { background: var(--accent-subtle); color: var(--accent); }
+.nav-item[aria-current="true"] { background: var(--accent-subtle); color: var(--accent-text, var(--accent)); }
 .nav-item .lbl { overflow: hidden; text-overflow: ellipsis; }
 .sb-sep { border: 0; border-top: 1px solid var(--border-subtle); margin: 8px 16px 6px; flex: none; }
 /* Pinned to the bottom also when nothing above grows. */

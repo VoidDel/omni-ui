@@ -1,8 +1,13 @@
 // Theme validation and token derivation (OmniZip docs/05-theming.md §2), the TypeScript twin of
 // OmniZip's Rust theme service. Apps with a Rust theme service resolve there; this one serves
 // previews, tests and apps that resolve in the WebView.
+//
+// Ahead of the Rust service since the contrast pass: `fg-muted` and `fg.secondary` are held to
+// 4.5:1, `accent-fg` picks the better of black and white, and the `*-text` tokens exist. The
+// stylesheets fall back (`var(--success-text, var(--success))`), so an app whose service does
+// not derive them yet looks as before.
 
-import { alpha, contrast, guard, mix, onColor, validHex } from './color';
+import { alpha, contrast, guard, mix, onColor, opacityFor, validHex } from './color';
 import { REQUIRED_COLORS, type ResolveOptions, type ResolvedTheme, type ThemeFile, type ThemeSummary } from './types';
 
 const KNOWN_KEYS = new Set(['$schema', 'schemaVersion', 'id', 'name', 'author', 'appearance', 'highContrast', 'colors', 'components', 'shape', 'effects', 'icons']);
@@ -43,7 +48,7 @@ export function resolveTheme(t: ThemeFile, o: ResolveOptions): ResolvedTheme {
   const adjusted: string[] = [];
 
   const [fg, a1] = guard(c('fg.primary'), [canvas, surface, elevated], 4.5);
-  const [fg2, a2] = guard(c('fg.secondary'), [canvas, surface, elevated], 3.0);
+  const [fg2, a2] = guard(c('fg.secondary'), [canvas, surface, elevated], 4.5);
   if (a1) adjusted.push('fg.primary');
   if (a2) adjusted.push('fg.secondary');
   let accent: string;
@@ -69,7 +74,8 @@ export function resolveTheme(t: ThemeFile, o: ResolveOptions): ResolvedTheme {
   tk['bg-pressed'] = mix(surface, fg, hc ? 0.2 : 0.11);
   tk['fg-primary'] = fg;
   tk['fg-secondary'] = fg2;
-  tk['fg-muted'] = alpha(fg, hc ? 0.8 : 0.55);
+  // Hints, group labels and the like are still text: as faint as 4.5:1 allows, on every pane.
+  tk['fg-muted'] = alpha(fg, opacityFor(fg, [canvas, surface, elevated, sidebar], 4.5, hc ? 0.8 : 0.55));
   tk['fg-disabled'] = alpha(fg, hc ? 0.5 : 0.35);
   tk['border-subtle'] = hc ? border : mix(border, surface, 0.5);
   tk['border-default'] = border;
@@ -87,6 +93,22 @@ export function resolveTheme(t: ThemeFile, o: ResolveOptions): ResolvedTheme {
   // Fixed family colour for BitTorrent / magnet badges (Omni Download), lighter on dark themes.
   tk['bt'] = dark ? '#A48BFF' : '#7A5AF8';
   tk['bt-subtle'] = alpha(tk['bt'], dark ? 0.16 : 0.14);
+  // The same colours for text (`--accent-text`, `--success-text` …): the colour itself fills
+  // dots, bars and buttons, where 3:1 is enough; as text it is moved toward the foreground until
+  // it reads at 4.5:1 on every pane, on its own subtle background and in a selected row.
+  const selected = mix(canvas, accent, hc ? 0.35 : 0.22);
+  for (const [name, color, subtle] of [
+    ['accent', accent, hc ? 0.28 : 0.14],
+    ['success', c('success'), 0.14],
+    ['warning', c('warning'), 0.16],
+    ['danger', c('danger'), 0.14],
+    ['info', c('info'), 0.14],
+    ['bt', tk['bt'], dark ? 0.16 : 0.14],
+  ] as const) {
+    const panes = [canvas, surface, elevated, sidebar];
+    // A badge in a selected row: the colour's tint over the selection.
+    tk[`${name}-text`] = guard(color, [...panes, selected, ...[...panes, selected].map((p) => mix(p, color, subtle))], 4.5)[0];
+  }
   tk['selection-bg'] = alpha(accent, hc ? 0.35 : 0.22);
   tk['selection-fg'] = fg;
   tk['folder-color'] = dark ? '#F0C35C' : '#E0A82E';
